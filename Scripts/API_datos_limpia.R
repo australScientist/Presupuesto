@@ -68,7 +68,7 @@ ipc <- data.frame(
   fecha = seq(as.Date("2023-01-01"),
               as.Date("2024-03-01"),
               by = "month"), 
-  ipc = c(6.0,6.6,7.7,8.4,7.8,6.0,6.3,12.4,12.7,8.3,12.8,25.5,20.6,13.2,12) #¿Cómo obtuvieron el de marzo si no está en INDEC? con convendria usar otro indice?
+  ipc = c(6.0,6.6,7.7,8.4,7.8,6.0,6.3,12.4,12.7,8.3,12.8,25.5,20.6,13.2,11.7) #¿Cómo obtuvieron el de marzo si no está en INDEC? con convendria usar otro indice?
   )
 #add cumulative IPC column, multiplying each value by the previous one
 ipc$cumulative <- cumprod(1+ipc$ipc/100)/1.06

@@ -13,7 +13,7 @@ library(d3treeR)
 
 geoArgentina = get_geo("ARGENTINA",level = "provincia")
 
-data = read_tsv(file = "app/DataBase.tsv")
+data = read_tsv(file = "DataBase.tsv")
 
 # Define UI ----
 ui <- fluidPage(
@@ -26,8 +26,8 @@ ui <- fluidPage(
     sidebarPanel(
       radioButtons(inputId = "exploracion",label = "Quiero ver",
                    choices = list(
-                     "La Composicón de nuestro Presupuesto" = 1,
-                     "Cómo Varió el Presupuesto en el Tiempo" = 2
+                     "Cómo Varió el Presupuesto en el Tiempo" = 1,
+                     "La Composición de nuestro Presupuesto" = 2
                    ),
                    selected = 1),
       uiOutput("modo"),
@@ -58,7 +58,7 @@ server <- function(input, output,session) {
   # COndicionar Universidad en Región Geográfica
   
   output$modo = renderUI({
-    if (input$exploracion == 1){
+    if (input$exploracion == 2){
       radioButtons(
         "filtroTreeMap", 
         "Seleccioná qué tipo de dato:",
@@ -74,20 +74,21 @@ server <- function(input, output,session) {
     } else {
       radioButtons(
         "filtro", 
-        "Seleccioná qué tipo de dato:",
-        choices = list("Provincia" = 1,
+        "Seleccioná como agrupar los datos:",
+        choices = list(                       
                        "Universidades" = 2,
+                       "Provincia" = 1,
                        "Formación" = 3,
                        "Otras Organizaciones" = 4,
                        "Funcionamiento" = 5
         ),
-        selected = 1
+        selected = 2
       )
     }
   })
   
   output$elegir = renderUI({
-    if (input$filtro == 1 & input$exploracion == 2) {
+    if (input$filtro == 1 & input$exploracion == 1) {
       selectInput("elegir", "Elegí tu institución:",
                   choices = data %>%  
                     select(ubicacion_geografica_desc) %>% 
@@ -95,7 +96,7 @@ server <- function(input, output,session) {
                     unique,
                   selected = 1
       )
-    } else if (input$filtro == 2 & input$exploracion == 2) {
+    } else if (input$filtro == 2 & input$exploracion == 1) {
       selectInput("elegir", "Elegí tu institución:",
                   choices = data %>%  
                     filter(
@@ -107,7 +108,7 @@ server <- function(input, output,session) {
                     unique,
                   selected = 1
       )
-    } else if (input$filtro == 3 & input$exploracion == 2) {
+    } else if (input$filtro == 3 & input$exploracion == 1) {
       selectInput("elegir", "Tipo:",
                   choices = data %>%  
                     filter(subparcial_desc == "Becas"|
@@ -117,7 +118,7 @@ server <- function(input, output,session) {
                     unique,
                   selected = 1
       )
-    } else if (input$filtro == 4 & input$exploracion == 2) {
+    } else if (input$filtro == 4 & input$exploracion == 1) {
       selectInput("elegir", "Elegí tu institución:",
                   choices = data %>%  
                     filter(
@@ -131,7 +132,7 @@ server <- function(input, output,session) {
                     unique,
                   selected = 1
       )
-    }else if (input$filtro == 5 & input$exploracion == 2) {
+    }else if (input$filtro == 5 & input$exploracion == 1) {
       selectInput("elegir", "Gastos:",
                   choices = data %>%  
                     filter(
@@ -191,7 +192,7 @@ server <- function(input, output,session) {
   # })
   
   output$Personalizar = renderUI({
-    if (input$exploracion == 2) {
+    if (input$exploracion == 1) {
       checkboxGroupInput(inputId = "personalizarGrafico",
                          label = "Personalizá el gráfico:",
                          choices = c("Puntos",
@@ -205,14 +206,14 @@ server <- function(input, output,session) {
   
   
   output$plot = renderUI({
-    if (input$exploracion == 1){
+    if (input$exploracion == 2){
       plotOutput("budgetPlot")
-    } else if (input$exploracion == 2){
+    } else if (input$exploracion == 1){
       plotlyOutput("budgetPlotly")
     }
   })
   output$budgetPlotly = renderPlotly({
-    if (input$exploracion == 1) {
+    if (input$exploracion == 2) {
       
       if (input$filtroTreeMap == 1) {
         p = left_join(
@@ -336,7 +337,7 @@ server <- function(input, output,session) {
       }
       
       
-    } else if (input$exploracion == 2) {
+    } else if (input$exploracion == 1) {
       if (input$filtro == 1) {
         readyToPlot = data %>%
           filter(
@@ -443,7 +444,7 @@ server <- function(input, output,session) {
   })
 
   output$budgetPlot = renderPlot({
-    if (input$exploracion == 1) {
+    if (input$exploracion == 2) {
       
       if (input$filtroTreeMap == 1) {
         p = left_join(
@@ -567,7 +568,7 @@ server <- function(input, output,session) {
       }
       
       
-    } else if (input$exploracion == 2) {
+    } else if (input$exploracion == 1) {
       if (input$filtro == 1) {
         readyToPlot = data %>%
           filter(
